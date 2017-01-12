@@ -1,0 +1,100 @@
+---
+title: "Watson Lab Sentiment Analysis"
+author: "Surabhi Chouhan"
+date: "January 10, 2017"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+##Get access to IBM Watson Lab 
+```{r }
+
+#to use install_github() to install packages hosted on GitHub
+library("devtools")
+
+#package used to use sentiment analysis and other features of Alchemy Language of Watson Lab
+devtools::install_github("ColumbusCollaboratory/cognizer")
+library("cognizer")
+
+#code used to set R environment and use the AlchemyAPI key
+r_env <- file.path(normalizePath("~"), ".Renviron")
+if (!file.exists(r_env)) file.create(r_env)
+
+#Getting authentication for using AlchemyAPI
+SERVICE_API_KEY = "e806f3bc37a652d9dd7c29af9355a64a4d547917"
+
+```
+
+
+#Sentiment analysis of SBA text using Alchemy language of Watson Lab
+```{r}
+#Step 2: Get the sentiment scores for SBA speech
+
+SBA <- readLines("D:/Surabhi docs/portfolio/SBA-speech.txt")
+
+#getting the sentiment score using the inbuilt function from Watson Lab
+result <- text_sentiment(SBA,"e806f3bc37a652d9dd7c29af9355a64a4d547917")
+
+
+#Divide the text into 4 parts by sentence
+
+splitSBA = split(SBA,sample(rep(1:2:3:4,600))) #where 538 is the number of words in the speech
+set.seed(10)
+result1 <- text_sentiment(splitSBA$`1`,"e806f3bc37a652d9dd7c29af9355a64a4d547917")
+
+result2 <- text_sentiment(splitSBA$`2`,"e806f3bc37a652d9dd7c29af9355a64a4d547917")
+
+result3 <- text_sentiment(splitSBA$`3`,"e806f3bc37a652d9dd7c29af9355a64a4d547917")
+
+result4 <- text_sentiment(splitSBA$`4`,"e806f3bc37a652d9dd7c29af9355a64a4d547917")
+
+#The following statements gets just the score from the data frame and stores it in a vector
+result1[[1]]$docSentiment$score
+
+result2[[2]]$docSentiment$score
+
+result3[[3]]$docSentiment$score
+
+result4[[2]]$docSentiment$score
+
+allResults <- as.numeric(c(result1[[1]]$docSentiment$score,result2[[2]]$docSentiment$score,result3[[3]]$docSentiment$score,result4[[2]]$docSentiment$score))
+
+#plotting the sentiment score for each quarter of scpeech on a barplot
+barplot(allResults,main="Sentiment analysis")
+```
+#Emotion analysis using Alchemy language of Watson Lab
+```{r}
+#Step 4: Try to explore more functions (i.e., emotion analysis) of Watson through R
+
+#getting the emotion analysis using the inbuilt function from Watson Lab
+SBA_emotion <- text_emotion(SBA,"e806f3bc37a652d9dd7c29af9355a64a4d547917")
+SBA_emotion[[15]]$docEmotions
+
+#split the speech into 4 parts
+splitSBA1 = split(SBA,sample(rep(1:2:3:4,600)))
+set.seed(10)
+result_emo1 <- text_emotion(splitSBA$`1`,"e806f3bc37a652d9dd7c29af9355a64a4d547917")
+
+result_emo2 <- text_emotion(splitSBA$`2`,"e806f3bc37a652d9dd7c29af9355a64a4d547917")
+
+result_emo3 <- text_emotion(splitSBA$`3`,"e806f3bc37a652d9dd7c29af9355a64a4d547917")
+
+result_emo4 <- text_emotion(splitSBA$`4`,"e806f3bc37a652d9dd7c29af9355a64a4d547917")
+
+result_emo1[[4]]$docEmotions  
+
+result_emo2[[2]]$docEmotions  
+
+result_emo3[[1]]$docEmotions  
+
+result_emo4[[1]]$docEmotions  
+
+ 
+```
+
